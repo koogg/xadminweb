@@ -1,19 +1,31 @@
 <script lang="ts" setup>
 import { RePlusPage } from "@/components/RePlusPage";
 import { useProductionReport } from "./utils/hook";
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import MobileView from "./components/MobileView.vue";
+import { useWindowSize } from "@vueuse/core";
 
 defineOptions({
-  name: "生产报工" // 必须定义，用于菜单自动匹配组件
+  name: "生产报工"
 });
+
 const tableRef = ref();
-const { api, auth } = useProductionReport(tableRef);
+const { api, auth, operationButtonsProps, listColumnsFormat } =
+  useProductionReport(tableRef);
+
+// 判断是否为移动端
+const { width } = useWindowSize();
+const isMobile = computed(() => width.value < 768);
 </script>
+
 <template>
-  <RePlusPage
+  <component 
+    :is="isMobile ? MobileView : RePlusPage"
     ref="tableRef"
     :api="api"
     :auth="auth"
-    locale-name="ProductionReport"
+    :locale-name="isMobile ? undefined : 'ProductionReport'"
+    :operationButtonsProps="isMobile ? undefined : operationButtonsProps"
+    :list-columns-format="isMobile ? undefined : listColumnsFormat"
   />
 </template>
