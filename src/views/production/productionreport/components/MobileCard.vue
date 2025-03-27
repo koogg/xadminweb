@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+// 保留原有导入
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { handleOperation } from "@/components/RePlusPage";
 import { useI18n } from "vue-i18n";
@@ -6,8 +7,10 @@ import Check from "@iconify-icons/ep/check";
 import VideoPause from "@iconify-icons/ep/video-pause";
 import VideoPlay from "@iconify-icons/ep/video-play";
 import { productionreportApi } from "../utils/api";
-import { ref } from 'vue';
+import { ref } from "vue";
+import { Edit, Delete } from "@element-plus/icons-vue";
 
+// 保留原有 props 定义
 const props = defineProps({
   item: {
     type: Object,
@@ -20,13 +23,21 @@ const props = defineProps({
   onRefresh: {
     type: Function,
     default: () => {}
+  },
+  onEdit: {
+    type: Function,
+    default: null
+  },
+  onDelete: {
+    type: Function,
+    default: null
   }
 });
 
 const { t } = useI18n();
 
 // 获取状态标签
-const getStatusTag = (row) => {
+const getStatusTag = row => {
   let type = "info";
   let text = "进行中";
 
@@ -44,14 +55,35 @@ const getStatusTag = (row) => {
 // 控制操作状态
 const isOperating = ref(false);
 
-// 操作处理函数
+// 修改操作处理函数，直接使用 API 方法
 const handleAction = (action, row) => {
   if (isOperating.value) return;
   isOperating.value = true;
-  
+
+  // 根据操作类型调用对应的 API 方法
+  let apiReq;
+  switch (action) {
+    case 'pause':
+      apiReq = productionreportApi.pause(row.pk);
+      break;
+    case 'resume':
+      apiReq = productionreportApi.resume(row.pk);
+      break;
+    case 'complete':
+      apiReq = productionreportApi.complete(row.pk);
+      break;
+    default:
+      apiReq = null;
+  }
+
+  if (!apiReq) {
+    isOperating.value = false;
+    return;
+  }
+
   handleOperation({
     t,
-    apiReq: productionreportApi[action](row.pk),
+    apiReq,
     success() {
       props.onRefresh();
     },
@@ -62,8 +94,22 @@ const handleAction = (action, row) => {
 };
 
 // 判断是否可以完成
-const canComplete = (row) => {
+const canComplete = row => {
   return !row.end_time && (!row.pause_time || row.resume_time);
+};
+
+// 处理编辑
+const handleEdit = () => {
+  if (props.onEdit) {
+    props.onEdit(props.item);
+  }
+};
+
+// 处理删除
+const handleDelete = () => {
+  if (props.onDelete) {
+    props.onDelete(props.item);
+  }
 };
 </script>
 
@@ -71,11 +117,13 @@ const canComplete = (row) => {
   <div class="mobile-card">
     <div class="card-header">
       <div class="card-title">
-        {{ item.production_order?.label || '生产报工' }}
+        {{ item.production_order?.label || "生产报工" }}
       </div>
-      <el-tag :type="getStatusTag(item).type" size="small">{{ getStatusTag(item).text }}</el-tag>
+      <el-tag :type="getStatusTag(item).type" size="small"
+        >{{ getStatusTag(item).text }}
+      </el-tag>
     </div>
-    
+
     <div class="card-content">
       <div class="info-item" v-if="item.process_step">
         <span class="label">工序：</span>
@@ -89,6 +137,16 @@ const canComplete = (row) => {
         <span class="label">开始时间：</span>
         <span class="value">{{ item.start_time }}</span>
       </div>
+      <!-- 添加暂停时间显示 -->
+      <div class="info-item" v-if="item.pause_time">
+        <span class="label">暂停时间：</span>
+        <span class="value">{{ item.pause_time }}</span>
+      </div>
+      <!-- 添加恢复时间显示 -->
+      <div class="info-item" v-if="item.resume_time">
+        <span class="label">恢复时间：</span>
+        <span class="value">{{ item.resume_time }}</span>
+      </div>
       <div class="info-item" v-if="item.end_time">
         <span class="label">结束时间：</span>
         <span class="value">{{ item.end_time }}</span>
@@ -98,12 +156,36 @@ const canComplete = (row) => {
         <span class="value">{{ item.total_time }}</span>
       </div>
     </div>
-    
-    <div class="card-footer">      
+
+    <div class="card-footer">
+      <!-- 修改编辑按钮条件，确保显示 -->
+      <el-button
+        v-if="auth.update"
+        type="primary"
+        size="small"
+        plain
+        :icon="Edit"
+        @click="handleEdit"
+      >
+        编辑
+      </el-button>
+
+      <!-- 删除按钮 -->
+      <el-button
+        v-if="onDelete && auth.destroy"
+        type="danger"
+        size="small"
+        plain
+        :icon="Delete"
+        @click="handleDelete"
+      >
+        删除
+      </el-button>
+
       <!-- 暂停按钮 -->
-      <el-button 
+      <el-button
         v-if="auth.pause && !item.end_time && !item.pause_time"
-        type="warning" 
+        type="warning"
         size="small"
         :loading="isOperating"
         @click="handleAction('pause', item)"
@@ -113,11 +195,13 @@ const canComplete = (row) => {
         </el-icon>
         暂停
       </el-button>
-      
+
       <!-- 恢复按钮 -->
-      <el-button 
-        v-if="auth.resume && item.pause_time && !item.resume_time && !item.end_time"
-        type="primary" 
+      <el-button
+        v-if="
+          auth.resume && item.pause_time && !item.resume_time && !item.end_time
+        "
+        type="primary"
         size="small"
         :loading="isOperating"
         @click="handleAction('resume', item)"
@@ -127,11 +211,11 @@ const canComplete = (row) => {
         </el-icon>
         恢复
       </el-button>
-      
+
       <!-- 完成按钮 -->
-      <el-button 
+      <el-button
         v-if="auth.complete && canComplete(item)"
-        type="success" 
+        type="success"
         size="small"
         :loading="isOperating"
         @click="handleAction('complete', item)"
@@ -185,6 +269,7 @@ const canComplete = (row) => {
 .value {
   color: var(--el-text-color-primary);
   flex: 1;
+  word-break: break-all;
 }
 
 .card-footer {
@@ -192,5 +277,9 @@ const canComplete = (row) => {
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.mr-1 {
+  margin-right: 4px;
 }
 </style>

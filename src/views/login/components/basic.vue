@@ -278,6 +278,8 @@ watch(loginDay, value => {
           </el-button>
         </el-form-item>
       </Motion>
+      <!-- 注释掉第三方登录部分 -->
+      <!--
       <Motion :delay="350">
         <el-form-item>
           <el-divider>
@@ -298,24 +300,25 @@ watch(loginDay, value => {
           </div>
         </el-form-item>
       </Motion>
+      -->
     </el-form>
     <Motion v-else :delay="300">
       <el-result icon="error" title="当前服务器不允许登录" />
     </Motion>
-    <Motion :delay="300">
-      <el-form-item>
-        <div class="w-full h-[20px] flex justify-between items-center">
-          <el-button
-            v-for="(item, index) in operates"
-            :key="index"
-            class="w-full mt-4"
-            size="default"
-            @click="useUserStoreHook().SET_CURRENT_PAGE(index + 1)"
-          >
-            {{ t(item.title) }}
-          </el-button>
-        </div>
-      </el-form-item>
-    </Motion>
+    <!--    <Motion :delay="300">-->
+    <!--      <el-form-item>-->
+    <!--        <div class="w-full h-[20px] flex justify-between items-center">-->
+    <!--          <el-button-->
+    <!--            v-for="(item, index) in operates"-->
+    <!--            :key="index"-->
+    <!--            class="w-full mt-4"-->
+    <!--            size="default"-->
+    <!--            @click="useUserStoreHook().SET_CURRENT_PAGE(index + 1)"-->
+    <!--          >-->
+    <!--            {{ t(item.title) }}-->
+    <!--          </el-button>-->
+    <!--        </div>-->
+    <!--      </el-form-item>-->
+    <!--    </Motion>-->
   </div>
 </template>

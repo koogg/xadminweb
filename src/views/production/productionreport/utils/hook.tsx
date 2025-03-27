@@ -4,13 +4,16 @@ import { getDefaultAuths } from "@/router/utils";
 import type { OperationProps, PageTableColumn } from "@/components/RePlusPage";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { handleOperation } from "@/components/RePlusPage";
-import { useI18n } from "vue-i18n";
 import { ElTag } from "element-plus";
 import Check from "@iconify-icons/ep/check";
 import VideoPause from "@iconify-icons/ep/video-pause";
 import VideoPlay from "@iconify-icons/ep/video-play";
+import { useI18n } from "vue-i18n"; // 添加 useI18n 导入
 
 export function useProductionReport(tableRef: Ref) {
+  // 添加 t 变量定义
+  const { t } = useI18n();
+  
   // 权限判断，用于判断是否有该权限
   const api = reactive(productionreportApi);
   const auth = reactive({
@@ -19,7 +22,6 @@ export function useProductionReport(tableRef: Ref) {
     resume: false,
     ...getDefaultAuths(getCurrentInstance(), ["complete", "pause", "resume"])
   });
-  const { t } = useI18n();
 
   /**
    * 添加操作按钮，用于控制报工的完成、暂停和恢复
