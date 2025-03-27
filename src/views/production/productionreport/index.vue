@@ -19,7 +19,7 @@ const isMobile = computed(() => width.value < 768);
 </script>
 
 <template>
-  <component 
+  <component
     :is="isMobile ? MobileView : RePlusPage"
     ref="tableRef"
     :api="api"

@@ -12,7 +12,7 @@ class ProductionOrderApi extends BaseApi {
   };
 }
 
-const productionprderApi = new ProductionOrderApi(
+const productionorderApi = new ProductionOrderApi(
   "/api/production/production-order"
 );
-export { productionprderApi };
+export { productionorderApi };

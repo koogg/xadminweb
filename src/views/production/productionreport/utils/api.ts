@@ -33,5 +33,8 @@ class ProductionReportApi extends BaseApi {
   };
 }
 
-const productionreportApi = new ProductionReportApi("/api/production/production-report");
+const productionreportApi = new ProductionReportApi(
+  "/api/production/production-report"
+);
+
 export { productionreportApi };
