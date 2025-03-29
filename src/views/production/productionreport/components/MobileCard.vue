@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-// 保留原有导入
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { handleOperation } from "@/components/RePlusPage";
 import { useI18n } from "vue-i18n";
@@ -10,7 +9,6 @@ import { productionreportApi } from "../utils/api";
 import { ref } from "vue";
 import { Edit, Delete } from "@element-plus/icons-vue";
 
-// 保留原有 props 定义
 const props = defineProps({
   item: {
     type: Object,
@@ -125,6 +123,11 @@ const handleDelete = () => {
     </div>
 
     <div class="card-content">
+      <!-- 添加生产令号显示 -->
+      <div class="info-item" v-if="item.production_order?.production_number">
+        <span class="label">生产令号：</span>
+        <span class="value">{{ item.production_order.production_number }}</span>
+      </div>
       <div class="info-item" v-if="item.process_step">
         <span class="label">工序：</span>
         <span class="value">{{ item.process_step.label }}</span>
@@ -236,6 +239,7 @@ const handleDelete = () => {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   margin-bottom: 12px;
   padding: 16px;
+  overflow: hidden; /* 防止内容溢出 */
 }
 
 .card-header {
@@ -248,6 +252,10 @@ const handleDelete = () => {
 .card-title {
   font-size: 16px;
   font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 70%; /* 限制标题宽度 */
 }
 
 .card-content {
@@ -264,6 +272,7 @@ const handleDelete = () => {
   color: var(--el-text-color-secondary);
   margin-right: 8px;
   min-width: 80px;
+  flex-shrink: 0; /* 防止标签缩小 */
 }
 
 .value {

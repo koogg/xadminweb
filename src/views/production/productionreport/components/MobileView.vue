@@ -33,6 +33,7 @@ const pagination = ref({
 // 筛选条件
 const filterForm = reactive({
   keyword: "",
+  production_number: "", // 添加生产令号筛选
   date_range: []
 });
 
@@ -52,7 +53,7 @@ const fetchData = async () => {
       page: pagination.value.page,
       limit: pagination.value.limit,
       search: filterForm.keyword || undefined,
-      // 移除 status 参数
+      production_number: filterForm.production_number || undefined, // 添加生产令号筛选
       start_date: filterForm.date_range?.[0] || undefined,
       end_date: filterForm.date_range?.[1] || undefined
     };
@@ -97,7 +98,7 @@ const refreshData = () => {
 // 重置筛选条件
 const resetFilter = () => {
   filterForm.keyword = "";
-  // 移除对 status 的重置
+  filterForm.production_number = ""; // 重置生产令号筛选
   filterForm.date_range = [];
   fetchData();
 };
@@ -183,14 +184,14 @@ const handleFormCancel = () => {
         :icon="Plus"
         @click="handleAdd"
         v-if="auth.create"
-        >新增</el-button
-      >
-      <el-button :icon="Search" @click="showFilter = !showFilter">{{
-        showFilter ? "隐藏筛选" : "显示筛选"
-      }}</el-button>
+        >新增
+      </el-button>
+      <el-button :icon="Search" @click="showFilter = !showFilter"
+        >{{ showFilter ? "隐藏筛选" : "显示筛选" }}
+      </el-button>
       <el-button :icon="RefreshRight" @click="refreshData" :loading="loading"
-        >刷新</el-button
-      >
+        >刷新
+      </el-button>
     </div>
 
     <!-- 筛选区域 -->
@@ -204,7 +205,14 @@ const handleFormCancel = () => {
           />
         </el-form-item>
 
-        <!-- 移除状态筛选 -->
+        <!-- 添加生产令号筛选 -->
+        <el-form-item label="生产令号">
+          <el-input
+            v-model="filterForm.production_number"
+            placeholder="输入生产令号搜索"
+            clearable
+          />
+        </el-form-item>
 
         <el-form-item label="日期范围">
           <el-date-picker
@@ -214,6 +222,8 @@ const handleFormCancel = () => {
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             style="width: 100%"
+            popper-class="mobile-date-picker"
+            teleported
           />
         </el-form-item>
 
@@ -255,10 +265,13 @@ const handleFormCancel = () => {
     <!-- 表单抽屉 -->
     <el-drawer
       v-model="showForm"
-      :title="isEdit ? '编辑生产报工' : '新增生产报工'"
+      :title="null"
       direction="rtl"
       size="100%"
       :destroy-on-close="true"
+      :with-header="false"
+      :modal-class="'mobile-drawer-modal'"
+      :close-on-press-escape="false"
     >
       <MobileForm
         :is-edit="isEdit"
@@ -269,6 +282,22 @@ const handleFormCancel = () => {
     </el-drawer>
   </div>
 </template>
+
+<style>
+/* 优化抽屉样式 */
+.mobile-drawer-modal {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* 优化日期选择器在移动视图中的显示 */
+.el-date-editor.el-input__wrapper {
+  width: 100% !important;
+}
+
+.el-date-editor .el-input__wrapper {
+  width: 100% !important;
+}
+</style>
 
 <style scoped>
 .mobile-view {

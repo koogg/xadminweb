@@ -271,20 +271,32 @@ export function useBaseColumns(localeName: string) {
             "#c71585"
           ];
           break;
-        case "datetime":
-        case "date":
-          item["valueType"] = "date-picker";
-          item["fieldProps"]["type"] = column.input_type;
-          item["fieldProps"]["valueFormat"] = "YYYY-MM-DD HH:mm:ss";
-          item["width"] = 160;
-          // pure-table ****** start
-          item["cellRenderer"] = ({ row }) => (
-            <span v-copy={row[column.key]}>
-              {dayjs(row[column.key]).format("YYYY-MM-DD HH:mm:ss")}
-            </span>
-          );
-          // pure-table ****** end
-          break;
+          case "datetime":
+            item["valueType"] = "date-picker";
+            item["fieldProps"]["type"] = "datetime";
+            item["fieldProps"]["valueFormat"] = "YYYY-MM-DD HH:mm:ss";
+            item["width"] = 160;
+            // pure-table ****** start
+            item["cellRenderer"] = ({ row }) => (
+              <span v-copy={row[column.key]}>
+                {dayjs(row[column.key]).format("YYYY-MM-DD HH:mm:ss")}
+              </span>
+            );
+            // pure-table ****** end
+            break;
+          case "date":
+            item["valueType"] = "date-picker";
+            item["fieldProps"]["type"] = "date";
+            item["fieldProps"]["valueFormat"] = "YYYY-MM-DD";
+            item["width"] = 160;
+            // pure-table ****** start
+            item["cellRenderer"] = ({ row }) => (
+              <span v-copy={row[column.key]}>
+                {dayjs(row[column.key]).format("YYYY-MM-DD")}
+              </span>
+            );
+            // pure-table ****** end
+            break;
         case "boolean":
           item["valueType"] = "radio";
           item["renderField"] = renderBooleanSegmentedOption();
