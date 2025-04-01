@@ -7,10 +7,6 @@ xadmin-基于 Django+vue3 的 rbac 权限管理系统
 Django 做后端服务
 [xadmin-server](https://github.com/nineaiyu/xadmin-server)
 
-### 在线预览
-
-[https://xadmin.dvcloud.xin/](https://xadmin.dvcloud.xin/)
-账号密码：admin/admin123
 
 ## 开发文档
 
@@ -80,3 +76,43 @@ docker compose up xadmin-client-prod
 }
 ,
 ```
+## 项目结构
+~~~
+├── build
+├── build.sh                            # 构建就脚本
+├── commitlint.config.js
+├── docker-compose.yml                  # docker compose 运行文件
+├── Dockerfile                          # 用与构建容器镜像文件
+├── eslint.config.js
+├── index.html
+├── LICENSE
+├── locales                             # 国际化
+├── mock
+├── package.json                        # 环境依赖
+├── pnpm-lock.yaml
+├── postcss.config.js
+├── public
+├── src                                 # 主要源码
+│   ├── api                 # 接口api
+│   ├── App.vue
+│   ├── assets
+│   ├── components          # 组件库
+│       ├── RePlusSearch    # 后端对应搜索组件-重要！！！
+│       ├── RePlusPage      # 页面组件-重要！！！
+│   ├── config              # 项目配置
+│   ├── constants
+│   ├── directives
+│   ├── layout              # 项目框架
+│   ├── main.ts
+│   ├── plugins
+│   ├── router              # 路由
+│   ├── store
+│   ├── style
+│   ├── utils           
+│   └── views               #页面
+├── stylelint.config.js
+├── tailwind.config.ts
+├── tsconfig.json
+├── types
+└── vite.config.ts
+~~~
